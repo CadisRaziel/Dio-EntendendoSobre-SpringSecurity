@@ -11,12 +11,15 @@ public class WelcomeController {
         return "Welcome to my spring boot web api";
     }
 
+    //Atenção, eu comentei os @PreAuthorize pois quando utilizamos a 'configure adapter', nos setamos eles
+    //na classe de webSecutiryConfig
+
     //'MANAGERS', 'USERS' -> o nome é caseSentitive e tem que ser exatamente igual ao colocado na classe WebSecurityConfig
     //.roles("USERS") - .roles("MANAGERS");
 
     @GetMapping("/users")
-    @PreAuthorize("hasAnyRole('MANAGERS', 'USERS')") // hasAnyRole -> mais de um
-    //@PreAuthorize("hasAnyRole('managers', 'users')") -> estamos setando quem vamos permitir entre nessa rota
+    //@PreAuthorize("hasAnyRole('MANAGERS', 'USERS')") // hasAnyRole -> mais de um
+    //estamos setando quem vamos permitir entre nessa rota
     //ou seja quem vai te autorização para acessar essa rota, então os 'role' que vão ser aceitos são os
     //managers(admin) e users(usuarios)
     public String users(){
@@ -24,7 +27,7 @@ public class WelcomeController {
     }
 
     @GetMapping("/managers")
-    @PreAuthorize("hasRole('MANAGERS')") // hasRole -> somente um (aqui só os admins podem acessar essa rota)
+    //@PreAuthorize("hasRole('MANAGERS')") // hasRole -> somente um (aqui só os admins podem acessar essa rota)
     public String managers(){
         return "Authorized manager (admins)";
     }
