@@ -23,11 +23,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws  Exception {
         http.authorizeRequests()
                 .antMatchers("/").permitAll() //->rota inicial, permitir todos
-                //.antMatchers("/login").permitAll() //->rota login permitir todos
-                .antMatchers(HttpMethod.POST, "/login").permitAll() //->posso dizer tambem que na minha rota login só é permitido metodos POST
+                .antMatchers("/login").permitAll() //->rota login permitir todos
+                //.antMatchers(HttpMethod.POST, "/login").permitAll() //->posso dizer tambem que na minha rota login só é permitido metodos POST
                 .antMatchers("/managers").hasAnyRole("MANAGERS") //-> rota admins, somente menegers
                 .antMatchers("/users").hasAnyRole("USERS", "MANAGERS") //-> rota users, somente usuarios e admins
-                .antMatchers()
+                .anyRequest()
                 .authenticated()
                 .and()
                 .formLogin();
