@@ -1,5 +1,8 @@
-package dio.diospringsecurity;
+package dio.diospringsecurity.config;
 
+import dio.diospringsecurity.config.SecurityDatabaseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.proxy.NoOp;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -8,6 +11,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +23,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     //Criando os adapter e removendo do controller a anotação @PreAuthorize e fazendo ela aqui !
+
+    @Autowired
+    private SecurityDatabaseService securityService; //-> configuração de acesso a segurança que o spring security vai retornar
+    //forma global de obter a credencial vai ser atraves do nosso consumo do 'securityService'
+    @Autowired
+    public void globalUserDetails(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(securityService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws  Exception {
         http.authorizeRequests()
@@ -30,10 +43,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .formLogin();
+                //.formLogin() //-> tela de login que o spring gera para realizar a autenticação
+                .httpBasic(); //-> client http que vai tenta autentica sem exigir tela de login (por recomendação vai tenta algumas tentativas de autenticação)
+                //httpBasic-> o que quer dizer então, que teremos que usar o postman pra interagir !!
     }
 
     //AuthenticationManagerBuilder -> Cria uma cadeia de usuarios em memoria
+
+    /* desativando essa geração de usuarios pois colcoaremos os usuarios em um banco local(memoria) agora
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
@@ -47,6 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .password("{noop}master123") //{noop} -> Estrategia de criptografia
                 .roles("MANAGERS");
     }
+
+     */
 
     //Tipos de criptografia
     //{bcrypt} -> for BCryptPasswordEncoder (mais comun)
